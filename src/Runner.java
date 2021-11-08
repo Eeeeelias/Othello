@@ -2,6 +2,7 @@ import szte.mi.GameBoard;
 import szte.mi.Move;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -25,6 +26,17 @@ public class Runner {
         }
     }
 
+    public static void printMoves (ArrayList<Move> moves){
+        System.out.println("Valid moves: ");
+        if(moves.size() > 0){
+            for (Move m: moves){
+                    System.out.println("row: " + (m.x+1) + " column: " +  (m.y+1));
+            }
+        } else{
+            System.out.println("No valid moves");
+        }
+    }
+
     public static void main(String[] args) {
         GameBoard newGame = new GameBoard(0);
         Integer[][] testBoard = newGame.getBoard();
@@ -36,26 +48,30 @@ public class Runner {
             try {
                 Scanner scan = new Scanner(System.in);
                 System.out.println(" Player " + counter%2 +" please type in row & col number");
-                ArrayList<ArrayList> n = new ArrayList<>();
+                ArrayList<Move> possibleMoves = new ArrayList<>();
                 for(int i = 0; i < 8; i++){
                     for (int j = 0; j <8; j++){
+                        //ERROR: adds the changes to the possibleMoves not the valid moves
                         if (testBoard[i][j] == null){
-                            n.add(newGame.getPointsToChange(new Move(i, j), counter));
+                            if(newGame.getPointsToChange(new Move(i, j), counter) != null)
+                            possibleMoves.add(new Move(i, j));
                         }
                     }
                 }
-                n.removeAll(null);
+                possibleMoves.removeAll(Collections.singleton(null));
+                printMoves(possibleMoves);
                 Move currMove;
-                if(n.size() <= 0){
+                if(possibleMoves.size() <= 0){
                     currMove = null;
                 } else {
                     int x_coord = scan.nextInt();
                     int y_coord = scan.nextInt();
                     currMove = new Move(x_coord - 1, y_coord - 1);
+                    newGame.makeMove(currMove, counter);
                 }
-                newGame.makeMove(currMove, counter);
                 if(newGame.checkForWinner(currMove, prefMove)){
                     System.out.println("The Winner is: Player "+ counter %2);
+                    System.exit(0);
                 }
                 printBoard(testBoard);
                 counter++;
@@ -63,11 +79,12 @@ public class Runner {
             } catch (ArrayIndexOutOfBoundsException e){
                 System.out.println("invalid move, out of field");
             } catch (NullPointerException e){
+                e.printStackTrace();
                 System.out.println("invaid move, empty field");
                 counter--;
             } catch (InputMismatchException e){
                 System.out.println("invalid move, full field");
-                counter--;
+                //counter--;
             } catch (Exception e) {
                 System.out.println("invalid move");
             }

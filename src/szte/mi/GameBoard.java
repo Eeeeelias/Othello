@@ -202,7 +202,7 @@ public class GameBoard implements Player{
         }
         diags = new ArrayList<>();
         for(int i = move.x-1; i >=0; i--){
-            if(diag22 < 0 || i <0 || board[i][diag22] == null){
+            if(diag22 > 7 || i <0 || board[i][diag22] == null){
                 break;
             }
             if(board[i][diag22] != counter%2){
@@ -230,7 +230,6 @@ public class GameBoard implements Player{
 
     @Override
     public void init(int order, long t, Random rnd) {
-
     }
 
 
